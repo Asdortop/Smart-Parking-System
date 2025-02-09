@@ -1,0 +1,132 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class ParkingSystemAWT extends Frame {
+
+    static int totalSlots, availableSlots;
+    static ArrayList<String> parkedCars = new ArrayList<>();
+    TextField licensePlateField, totalSlotsField;
+    TextArea parkedCarsArea;
+    Label statusLabel;
+
+    public ParkingSystemAWT() {
+        // Frame title
+        setTitle("Smart Parking System");
+
+        // Layout
+        setLayout(new FlowLayout());
+
+        // Total slots input
+        Label totalSlotsLabel = new Label("Enter total parking slots:");
+        add(totalSlotsLabel);
+
+        totalSlotsField = new TextField(5);
+        add(totalSlotsField);
+
+        Button setSlotsButton = new Button("Set Slots");
+        add(setSlotsButton);
+
+        // License plate input
+        Label licensePlateLabel = new Label("License Plate:");
+        add(licensePlateLabel);
+
+        licensePlateField = new TextField(15);
+        add(licensePlateField);
+
+        // Buttons
+        Button parkCarButton = new Button("Park Car");
+        add(parkCarButton);
+
+        Button removeCarButton = new Button("Remove Car");
+        add(removeCarButton);
+
+        Button viewCarsButton = new Button("View Parked Cars");
+        add(viewCarsButton);
+
+        // Display parked cars
+        parkedCarsArea = new TextArea(10, 30);
+        add(parkedCarsArea);
+
+        // Status label
+        statusLabel = new Label("Status: ");
+        add(statusLabel);
+
+        // Event listeners
+        setSlotsButton.addActionListener(e -> setTotalSlots());
+        parkCarButton.addActionListener(e -> parkCar());
+        removeCarButton.addActionListener(e -> removeCar());
+        viewCarsButton.addActionListener(e -> viewParkedCars());
+
+        // Frame properties
+        setSize(400, 500);
+        setVisible(true);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+
+    private void setTotalSlots() {
+        try {
+            totalSlots = Integer.parseInt(totalSlotsField.getText());
+            availableSlots = totalSlots;
+            statusLabel.setText("Status: Total slots set to " + totalSlots);
+        } catch (NumberFormatException e) {
+            statusLabel.setText("Status: Invalid number for slots.");
+        }
+    }
+
+    private void parkCar() {
+        if (availableSlots == 0) {
+            statusLabel.setText("Status: No available slots.");
+            return;
+        }
+
+        String licensePlate = licensePlateField.getText().trim();
+        if (licensePlate.isEmpty()) {
+            statusLabel.setText("Status: Enter a valid license plate.");
+            return;
+        }
+
+        parkedCars.add(licensePlate);
+        availableSlots--;
+        statusLabel.setText("Status: Car parked. Available slots: " + availableSlots);
+        licensePlateField.setText("");
+    }
+
+    private void removeCar() {
+        if (availableSlots == totalSlots) {
+            statusLabel.setText("Status: No cars to remove.");
+            return;
+        }
+
+        String licensePlate = licensePlateField.getText().trim();
+        if (parkedCars.contains(licensePlate)) {
+            parkedCars.remove(licensePlate);
+            availableSlots++;
+            statusLabel.setText("Status: Car removed. Available slots: " + availableSlots);
+        } else {
+            statusLabel.setText("Status: Car not found.");
+        }
+        licensePlateField.setText("");
+    }
+
+    private void viewParkedCars() {
+        if (availableSlots == totalSlots) {
+            parkedCarsArea.setText("No parked cars.");
+            return;
+        }
+
+        parkedCarsArea.setText("Parked Cars:\n");
+        for (String car : parkedCars) {
+            parkedCarsArea.append(car + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        new ParkingSystemAWT();
+    }
+}
+    
